@@ -1323,6 +1323,37 @@ cdef class DynBFS(DynSSSP):
 		self._G = G
 		self._this = new _DynBFS(G._this, source)
 
+cdef extern from "cpp/graph/BottleneckSP.h":
+	cdef cppclass _BottleneckSP "NetworKit::BottleneckSP"(_SSSP):
+		_BottleneckSP(_Graph G, node source, bool storePath, bool storeStack, node target) except +
+
+cdef class BottleneckSP(SSSP):
+	
+	"""Dijkstra's SSSP algorithm using the Bottleneck metric of distance.  
+        Returns list of weighted distances from node source, i.e. the length of the shortest path from source to
+        any other node, where weight is defined by the bottleneck along the path. 
+
+    Dijkstra(G, source, [storePaths], [storeStack], target)
+
+    Creates Dijkstra for `G` and source node `source`.
+
+    Parameters
+        ----------
+        G : Graph
+                The graph.
+        source : node
+                The source node.
+        storePaths : bool
+                store paths and number of paths?
+        storeStack : bool
+                maintain a stack of nodes in order of decreasing distance?
+        target : node
+                target node. Search ends when target node is reached. t is set to None by default.
+	"""
+
+	def __cinit__(self, Graph G, source, storePaths=True, storeStack=False, node target=none):
+		self._G = G
+		self._this = new _BottleneckSP(G._this, source, storePaths, storeStack, target)
 
 cdef extern from "cpp/graph/Dijkstra.h":
 	cdef cppclass _Dijkstra "NetworKit::Dijkstra"(_SSSP):
